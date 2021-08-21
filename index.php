@@ -393,7 +393,7 @@
             });
 
             // ============= data Management
-            clear_site_management();
+            // clear_site_management();
             site_management();
             function site_management(){
                 var site_config = [{
@@ -419,13 +419,47 @@
                     "list_of_sponsors": []
                 }];
                 if(localStorage.getItem('site_config') != null && localStorage.getItem('certificate') != null){
+                    var sc = JSON.parse(localStorage.getItem('site_config'));
                     var site_config_parsed = JSON.parse(localStorage.getItem('site_config'));
                     var certificate_parsed = JSON.parse(localStorage.getItem('certificate'));
 
-                    if(site_config[0]['site_image'] != ""){
-                        $("#logo").attr("src", site_config[0]['site_image']);
+                    // logo
+                    if(sc[0]['site_image'] != ""){
+                        $("#logo").attr("src", "uploaded_images/"+sc[0]['site_image']);
                     }
+                    // background image
+                    if(sc[0]['site_background'] != ""){                        
+                        $("#printArea").css("background-image", "url('uploaded_images/"+sc[0]['site_background']+"')");
+                    }
+                    // church name
+                    $("#church_name_text")[0].childNodes[0].innerText = sc[0]['church_name'];
 
+                    // church font size
+                    var innerText = $("#church_name_text")[0].innerText;
+                    var html = "";
+                    switch(sc[0]['church_name_font_size']){
+                        case "h1":
+                            html = "<h1>"+innerText+"</h1>";
+                            break;
+                        case "h2":
+                            html = "<h2>"+innerText+"</h2>";
+                            break;
+                        case "h3":
+                            html = "<h3>"+innerText+"</h3>";
+                            break;
+                        case "h4":
+                            html = "<h4>"+innerText+"</h4>";
+                            break;
+                        case "h5":
+                            html = "<h5>"+innerText+"</h5>";
+                            break;
+                        case "h6":
+                            html = "<h6>"+innerText+"</h1>";
+                            break;
+                        default: 
+                            html = "<h6>"+innerText+"</h6>";
+                    }
+                    $("#church_name_text").html(html);
                 }else{
                     localStorage.setItem('site_config', JSON.stringify(site_config));
                     localStorage.setItem('certificate', JSON.stringify(certificate));
@@ -512,7 +546,10 @@
 
             // Updating Church Font Style
             $("#church_name_font_style").change(function(){
-
+                var church_name_font_style = $("#church_name_font_style").find(":selected").text();
+                if(church_name_font_style != "Church Name Font Style"){
+                    $("#church_name_text").css('font-family', church_name_font_style);
+                }
             });
 
             // Updating Church Address
@@ -577,8 +614,6 @@
                 upload_background_image.append('file_to_exclude', 'logo.jpg');
                 upload_background_image.append('file_to_exclude2', file_data_logo != undefined ? file_data_logo.name : localStorage.getItem('site_config')[0]['site_image']);
                 upload_image(upload_background_image);
-                upload_background_image_name = file_data;
-                console.log(file_data_logo);
                 
                 // upload logo 
                 var upload_logo = new FormData();             
@@ -589,9 +624,35 @@
 
                 // fetching of data
                 // Church Name and Style
-                // var church_name = $("#church_name").val();
-                // var church_name = $("#church_name").val();
+                var church_name = $("#church_name").val();
+                var church_name_font_style = $("#church_name_font_style").find(":selected").text();
+                var church_name_font_size = $("#church_name_font_size").val();
+                var site_image = file_data_logo != undefined ? file_data_logo.name : localStorage.getItem('site_config')[0]['site_image'];
+                var site_background = file_data != undefined ? file_data.name : localStorage.getItem('site_config')[0]['site_background'];
+                var church_name = church_name == undefined ? localStorage.getItem('site_config')[0]['church_name']:church_name;
+                var church_name_font_size = church_name_font_size == undefined ? localStorage.getItem('site_config')[0]['church_name_font_size']:church_name_font_size;
+                var church_name_font_style = church_name_font_style == "Church Name Font Style" ? localStorage.getItem('site_config')[0]['church_name_font_style']:church_name_font_style;
+                var site_config = [{
+                    "site_image": site_image,
+                    "site_background": site_background,
+                    "certificate_of": "",
+                    "list_of_sponsors": "",
+                    "church_name": church_name,
+                    "church_name_font_size": church_name_font_size,
+                    "church_name_font_style": church_name_font_style,
+                    "address": "",
+                    "address_text_style": "",
+                    "is_include_address": true,
+                    "tel_number": "",
+                    "tel_number_text_style": "",
+                    "is_include_telephone": true
+                }];
+
                 
+                localStorage.setItem('site_config', JSON.stringify(site_config));
+                
+                site_management();
+                window.location.reload();
             });
 
             function upload_image(myFiles){
