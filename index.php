@@ -139,6 +139,30 @@
             background-size: cover;
             -webkit-print-color-adjust: exact;
         }
+        .text-changes-scroll{
+            height: 300px;
+            overflow-y: scroll;
+        }
+
+        /* width */
+        .text-changes-scroll::-webkit-scrollbar {
+        width: 10px;
+        }
+
+        /* Track */
+        .text-changes-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+        }
+        
+        /* Handle */
+        .text-changes-scroll::-webkit-scrollbar-thumb {
+        background: #888; 
+        }
+
+        /* Handle on hover */
+        .text-changes-scroll::-webkit-scrollbar-thumb:hover {
+        background: #555; 
+        }
     </style>
 
     <!-- JQUERY  -->
@@ -254,7 +278,7 @@
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="text_changes" role="tabpanel" aria-labelledby="text_changes-tab">
+                        <div class="tab-pane fade show active text-changes-scroll" id="text_changes" role="tabpanel" aria-labelledby="text_changes-tab">
                             <br>
                             <div class="mb-3">
                                 <label for="upload_background_image" class="form-label">Upload Background Image</label>
@@ -289,58 +313,15 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <div class="tab-pane fade text-changes-scroll" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                             <br>
                             <div class="mb-3">
                                 <label for="church_name_font_style">Church Name Font Style</label>
-                                <select class="form-select" aria-label="Default select example" id="church_name_font_style">
-                                    <option selected disabled>Church Name Font Style</option>
-                                    <option>Arial, sans-serif</option>
-                                    <option>Helvetica, sans-serif</option>
-                                    <option>Verdana, sans-serif</option>
-                                    <option>Trebuchet MS, sans-serif</option>
-                                    <option>Gill Sans, sans-serif</option>
-                                    <option>Noto Sans, sans-serif</option>
-                                    <option>Avantgarde, TeX Gyre Adventor, URW Gothic L, sans-serif</option>
-                                    <option>Optima, sans-serif</option>
-                                    <option>Arial Narrow, sans-serif</option>
-                                    <option>sans-serif</option>
-                                    <option>Impact, fantasy</option>
-                                    <option>Luminari, fantasy</option>
-                                    <option>Chalkduster, fantasy</option>
-                                    <option>Jazz LET, fantasy</option>
-                                    <option>Blippo, fantasy</option>
-                                    <option>Stencil Std, fantasy</option>
-                                    <option>Marker Felt, fantasy</option>
-                                    <option>Trattatello, fantasy</option>
-                                    <option>fantasy</option>
-                                    <option>Comic Sans MS, Comic Sans, cursive</option>
-                                    <option>Apple Chancery, cursive</option>
-                                    <option>Bradley Hand, cursive</option>
-                                    <option>Brush Script MT, Brush Script Std, cursive</option>
-                                    <option>Snell Roundhand, cursive</option>
-                                    <option>URW Chancery L, cursive</option>
-                                    <option>cursive</option>
-                                    <option>Andale Mono, monospace</option>
-                                    <option>Courier New, monospace</option>
-                                    <option>Courier, monospace</option>
-                                    <option>FreeMono, monospace</option>
-                                    <option>OCR A Std, monospace</option>
-                                    <option>DejaVu Sans Mono, monospace</option>
-                                    <option>monospace</option>
-                                    <option>Times, Times New Roman, serif</option>
-                                    <option>Didot, serif</option>
-                                    <option>Georgia, serif</option>
-                                    <option>Palatino, URW Palladio L, serif</option>
-                                    <option>Bookman, URW Bookman L, serif</option>
-                                    <option>New Century Schoolbook, TeX Gyre Schola, serif</option>
-                                    <option>American Typewriter, serif</option>
-                                    <option>serif</option>
-                                    <option>Old English Text MT</option>
+                                <select class="form-select dropdown_font_style" aria-label="Default select example" id="church_name_font_style">
                                 </select>
                             </div>
                             <div class="mb-3">
-                            <label for="church_name_font_style">Church Name Font Size</label>
+                                <label for="church_name_font_style">Church Name Font Size</label>
                                 <select class="form-select" aria-label="Default select example" id="church_name_font_size">
                                     <option selected value="">Church Name Font Size</option>
                                     <option value="h6">Extra small</option>
@@ -349,6 +330,16 @@
                                     <option value="h3">Large</option>
                                     <option value="h2">Extra Large</option>
                                     <option value="h1">Double XL</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="church_name_font_style">Address Font Style</label>
+                                <select class="form-select dropdown_font_style" aria-label="Default select example" id="address_font_style">
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="church_name_font_style">Telephone Font Style</label>
+                                <select class="form-select dropdown_font_style" aria-label="Default select example" id="telephone_font_style">
                                 </select>
                             </div>
                         </div>
@@ -371,6 +362,53 @@
     <!-- Custom Scripts -->
     <script>
         $(document).ready(function(){
+            generateFontStyleDropdown();
+            function generateFontStyleDropdown(){
+                var dropdown_template = "<option selected disabled>Church Name Font Style</option>"+
+                                    "<option>Arial, sans-serif</option>"+
+                                    "<option>Helvetica, sans-serif</option>"+
+                                    "<option>Verdana, sans-serif</option>"+
+                                    "<option>Trebuchet MS, sans-serif</option>"+
+                                    "<option>Gill Sans, sans-serif</option>"+
+                                    "<option>Noto Sans, sans-serif</option>"+
+                                    "<option>Avantgarde, TeX Gyre Adventor, URW Gothic L, sans-serif</option>"+
+                                    "<option>Optima, sans-serif</option>"+
+                                    "<option>Arial Narrow, sans-serif</option>"+
+                                    "<option>sans-serif</option>"+
+                                    "<option>Impact, fantasy</option>"+
+                                    "<option>Luminari, fantasy</option>"+
+                                    "<option>Chalkduster, fantasy</option>"+
+                                    "<option>Jazz LET, fantasy</option>"+
+                                    "<option>Blippo, fantasy</option>"+
+                                    "<option>Stencil Std, fantasy</option>"+
+                                    "<option>Marker Felt, fantasy</option>"+
+                                    "<option>Trattatello, fantasy</option>"+
+                                    "<option>fantasy</option>"+
+                                    "<option>Comic Sans MS, Comic Sans, cursive</option>"+
+                                    "<option>Apple Chancery, cursive</option>"+
+                                    "<option>Bradley Hand, cursive</option>"+
+                                    "<option>Brush Script MT, Brush Script Std, cursive</option>"+
+                                    "<option>Snell Roundhand, cursive</option>"+
+                                    "<option>URW Chancery L, cursive</option>"+
+                                    "<option>cursive</option>"+
+                                    "<option>Andale Mono, monospace</option>"+
+                                    "<option>Courier New, monospace</option>"+
+                                    "<option>Courier, monospace</option>"+
+                                    "<option>FreeMono, monospace</option>"+
+                                    "<option>OCR A Std, monospace</option>"+
+                                    "<option>DejaVu Sans Mono, monospace</option>"+
+                                    "<option>monospace</option>"+
+                                    "<option>Times, Times New Roman, serif</option>"+
+                                    "<option>Didot, serif</option>"+
+                                    "<option>Georgia, serif</option>"+
+                                    "<option>Palatino, URW Palladio L, serif</option>"+
+                                    "<option>Bookman, URW Bookman L, serif</option>"+
+                                    "<option>New Century Schoolbook, TeX Gyre Schola, serif</option>"+
+                                    "<option>American Typewriter, serif</option>"+
+                                    "<option>serif</option>"+
+                                    "<option>Old English Text MT</option>";
+                $(".dropdown_font_style").html(dropdown_template);
+            }
             loader();
             function loader(){
                 // will hide the loader
@@ -471,6 +509,16 @@
                         $("#church_name_text").css('font-family', sc[0]['church_name_font_style']);
                         $("#church_name_font_style").val(sc[0]['church_name_font_style']);
                     }
+                    // address
+                    if(sc[0]['address'] != ""){
+                        $("#address_text").html(sc[0]['address']);
+                        $("#church_address").val(sc[0]['address']);
+                    }
+                    // address font style
+                    if(sc[0]['address_text_style'] != ""){
+                        $("#address_text").css('font-family', sc[0]['address_text_style']);
+                        $("#address_font_style").val(sc[0]['address_text_style']);
+                    }
                 }else{
                     localStorage.setItem('site_config', JSON.stringify(site_config));
                     localStorage.setItem('certificate', JSON.stringify(certificate));
@@ -568,6 +616,13 @@
                 var val = $(this).val();
                 $("#address_text").html(val);
             });
+            // Updating Church Address Font Style
+            $("#address_font_style").change(function(){
+                var val = $(this).find(":selected").text();
+                if(val != "Church Name Font Style"){
+                    $("#address_text").css('font-family', val);
+                }
+            });
 
             $("#include_address").change(function(){
                 var result_address = $("#include_address").is(":checked");
@@ -640,11 +695,17 @@
                 var church_name = $("#church_name").val();
                 var church_name_font_style = $("#church_name_font_style").find(":selected").text();
                 var church_name_font_size = $("#church_name_font_size").val();
-                var site_image = file_data_logo != undefined ? file_data_logo.name : localStorage.getItem('site_config')[0]['site_image'] == undefined ? "":localStorage.getItem('site_config')[0]['site_image'];
-                var site_background = file_data != undefined ? file_data.name : localStorage.getItem('site_config')[0]['site_background'] == undefined ? "":localStorage.getItem('site_config')[0]['site_background'];
+                var site_image = file_data_logo != undefined ? file_data_logo.name : localStorage.getItem('site_config')[0]['site_image'] == "" ? "":localStorage.getItem('site_config')[0]['site_image'];
+                var site_background = file_data != undefined ? file_data.name : localStorage.getItem('site_config')[0]['site_background'] == "" ? "":localStorage.getItem('site_config')[0]['site_background'];
                 var church_name = church_name == undefined ? localStorage.getItem('site_config')[0]['church_name']:church_name;
-                var church_name_font_size = church_name_font_size == undefined ? localStorage.getItem('site_config')[0]['church_name_font_size']:church_name_font_size;
-                var church_name_font_style = church_name_font_style == "Church Name Font Style" ? localStorage.getItem('site_config')[0]['church_name_font_style']:church_name_font_style;
+                church_name_font_size = church_name_font_size == undefined ? localStorage.getItem('site_config')[0]['church_name_font_size']:church_name_font_size;
+                church_name_font_style = church_name_font_style == "Church Name Font Style" ? localStorage.getItem('site_config')[0]['church_name_font_style']:church_name_font_style;
+
+                // address and adress font style
+                var address = $("#church_address").val();
+                var church_address_font_style = $("#address_font_style").find(":selected").text();
+                church_address_font_style = church_address_font_style == "Church Name Font Style" ? localStorage.getItem('site_config')[0]['address_text_style']:church_address_font_style;
+                // Telephone Number
                 var site_config = [{
                     "site_image": site_image,
                     "site_background": site_background,
@@ -653,8 +714,8 @@
                     "church_name": church_name,
                     "church_name_font_size": church_name_font_size,
                     "church_name_font_style": church_name_font_style,
-                    "address": "",
-                    "address_text_style": "",
+                    "address": address,
+                    "address_text_style": church_address_font_style,
                     "is_include_address": true,
                     "tel_number": "",
                     "tel_number_text_style": "",
@@ -665,6 +726,7 @@
                 localStorage.setItem('site_config', JSON.stringify(site_config));
                 
                 site_management();
+                $("#modalSettingsForm").modal("hide");
             });
 
             function upload_image(myFiles){
