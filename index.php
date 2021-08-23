@@ -336,6 +336,7 @@
                                     <option>New Century Schoolbook, TeX Gyre Schola, serif</option>
                                     <option>American Typewriter, serif</option>
                                     <option>serif</option>
+                                    <option>Old English Text MT</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -428,38 +429,48 @@
                         $("#logo").attr("src", "uploaded_images/"+sc[0]['site_image']);
                     }
                     // background image
-                    if(sc[0]['site_background'] != ""){                        
+                    if(sc[0]['site_background'] != ""){
                         $("#printArea").css("background-image", "url('uploaded_images/"+sc[0]['site_background']+"')");
                     }
                     // church name
-                    $("#church_name_text")[0].childNodes[0].innerText = sc[0]['church_name'];
-
-                    // church font size
-                    var innerText = $("#church_name_text")[0].innerText;
-                    var html = "";
-                    switch(sc[0]['church_name_font_size']){
-                        case "h1":
-                            html = "<h1>"+innerText+"</h1>";
-                            break;
-                        case "h2":
-                            html = "<h2>"+innerText+"</h2>";
-                            break;
-                        case "h3":
-                            html = "<h3>"+innerText+"</h3>";
-                            break;
-                        case "h4":
-                            html = "<h4>"+innerText+"</h4>";
-                            break;
-                        case "h5":
-                            html = "<h5>"+innerText+"</h5>";
-                            break;
-                        case "h6":
-                            html = "<h6>"+innerText+"</h1>";
-                            break;
-                        default: 
-                            html = "<h6>"+innerText+"</h6>";
+                    if(sc[0]['church_name'] != ""){
+                        $("#church_name_text")[0].childNodes[0].innerText = sc[0]['church_name'];
+                        $("#church_name").val(sc[0]['church_name']);
                     }
-                    $("#church_name_text").html(html);
+                    // church font size
+                    if(sc[0]['church_name_font_size'] != ""){
+                        var innerText = $("#church_name_text")[0].innerText;
+                        var html = "";
+                        switch(sc[0]['church_name_font_size']){
+                            case "h1":
+                                html = "<h1>"+innerText+"</h1>";
+                                break;
+                            case "h2":
+                                html = "<h2>"+innerText+"</h2>";
+                                break;
+                            case "h3":
+                                html = "<h3>"+innerText+"</h3>";
+                                break;
+                            case "h4":
+                                html = "<h4>"+innerText+"</h4>";
+                                break;
+                            case "h5":
+                                html = "<h5>"+innerText+"</h5>";
+                                break;
+                            case "h6":
+                                html = "<h6>"+innerText+"</h1>";
+                                break;
+                            default: 
+                                html = "<h6>"+innerText+"</h6>";
+                        }
+                        $("#church_name_text").html(html);
+                        $("#church_name_font_size").val(sc[0]['church_name_font_size']);
+                    }
+                    // church font style
+                    if(sc[0]['church_name_font_style'] != ""){
+                        $("#church_name_text").css('font-family', sc[0]['church_name_font_style']);
+                        $("#church_name_font_style").val(sc[0]['church_name_font_style']);
+                    }
                 }else{
                     localStorage.setItem('site_config', JSON.stringify(site_config));
                     localStorage.setItem('certificate', JSON.stringify(certificate));
@@ -608,6 +619,8 @@
                 var file_data = $('#upload_background_image').prop('files')[0];   
                 var file_data_logo = $('#upload_logo').prop('files')[0];  
 
+                console.log("file_data", file_data);
+
                 // Upload Background Image
                 var upload_background_image = new FormData();             
                 upload_background_image.append('file', file_data);
@@ -627,8 +640,8 @@
                 var church_name = $("#church_name").val();
                 var church_name_font_style = $("#church_name_font_style").find(":selected").text();
                 var church_name_font_size = $("#church_name_font_size").val();
-                var site_image = file_data_logo != undefined ? file_data_logo.name : localStorage.getItem('site_config')[0]['site_image'];
-                var site_background = file_data != undefined ? file_data.name : localStorage.getItem('site_config')[0]['site_background'];
+                var site_image = file_data_logo != undefined ? file_data_logo.name : localStorage.getItem('site_config')[0]['site_image'] == undefined ? "":localStorage.getItem('site_config')[0]['site_image'];
+                var site_background = file_data != undefined ? file_data.name : localStorage.getItem('site_config')[0]['site_background'] == undefined ? "":localStorage.getItem('site_config')[0]['site_background'];
                 var church_name = church_name == undefined ? localStorage.getItem('site_config')[0]['church_name']:church_name;
                 var church_name_font_size = church_name_font_size == undefined ? localStorage.getItem('site_config')[0]['church_name_font_size']:church_name_font_size;
                 var church_name_font_style = church_name_font_style == "Church Name Font Style" ? localStorage.getItem('site_config')[0]['church_name_font_style']:church_name_font_style;
@@ -652,7 +665,6 @@
                 localStorage.setItem('site_config', JSON.stringify(site_config));
                 
                 site_management();
-                window.location.reload();
             });
 
             function upload_image(myFiles){
