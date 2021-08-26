@@ -80,6 +80,11 @@
             bottom: 20px;
             right: 20px;
         }
+        .btn-refresh{
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+        }
         .full-height{
             height: 100vh;
         }
@@ -163,6 +168,11 @@
         .text-changes-scroll::-webkit-scrollbar-thumb:hover {
         background: #555; 
         }
+
+        #sponsors_list{
+            position: absolute !important;
+            top: 195px !important;
+        }
     </style>
 
     <!-- JQUERY  -->
@@ -172,6 +182,8 @@
       
     <!-- Print Button -->
     <button type="button" class="btn-print btn btn-xl btn-success btn-circle btn-actions"><i class="fa fa-print"></i></button>
+    <!-- Refresh Button -->
+    <button type="button" class="btn-refresh btn btn-xl btn-danger btn-circle btn-actions" id="btnRefresh"><i class="fa fa-refresh"></i></button>
 
     <!-- Content -->
     <div class="container-fluid">
@@ -230,7 +242,11 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-sm-12 col-md-12">
-                                Sponsors List:
+                                <div id="sponsors_list">
+                                    <center>
+                                        Sponsors List:
+                                    </center>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -244,16 +260,39 @@
     <div class="modal fade right" id="modalCertificateForm" tabindex="-1" aria-labelledby="modalCertificateForm" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="exampleModalLabel">Certificate Content</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                ...
+                    <div class="mb-3">
+                        <label for="childs_full_name" class="form-label">Childs Full Name</label>
+                        <input type="text" class="form-control" id="childs_full_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="fathers_name" class="form-label">Fathers Name</label>
+                        <input type="text" class="form-control" id="fathers_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mothers_name" class="form-label">Mothers Name</label>
+                        <input type="text" class="form-control" id="mothers_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="sponsors" class="form-label">Sponsors (Seperate it with comma if more than 1)</label>
+                        <input type="text" class="form-control" id="sponsors">
+                    </div>
+                    <div class="mb-3">
+                        <label for="priest" class="form-label">Parish Priest</label>
+                        <input type="text" class="form-control" id="priest">
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_of_baptism" class="form-label">Date of Baptism</label>
+                        <input type="date" class="form-control" id="date_of_baptism">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-warning" id="btn-save-certificate-content">Save changes</button>
                 </div>
             </div>
         </div>
@@ -439,7 +478,6 @@
                     "site_image": "",
                     "site_background": "",
                     "certificate_of": "",
-                    "list_of_sponsors": "",
                     "church_name": "",
                     "church_name_font_size": "",
                     "church_name_font_style": "",
@@ -455,7 +493,9 @@
                     "childs_name": "",
                     "fathers_name": "",
                     "mothers_name": "",
-                    "list_of_sponsors": []
+                    "list_of_sponsors": "",
+                    "date_of_baptism": "",
+                    "parish_priest": ""
                 }];
                 if(localStorage.getItem('site_config') != null && localStorage.getItem('certificate') != null){
                     var sc = JSON.parse(localStorage.getItem('site_config'));
@@ -463,11 +503,11 @@
                     var certificate_parsed = JSON.parse(localStorage.getItem('certificate'));
 
                     // logo
-                    if(sc[0]['site_image'] != ""){
+                    if(sc[0]['site_image'] != "" && sc[0]['site_image'] != undefined){
                         $("#logo").attr("src", "uploaded_images/"+sc[0]['site_image']);
                     }
                     // background image
-                    if(sc[0]['site_background'] != ""){
+                    if(sc[0]['site_background'] != "" && sc[0]['site_background'] != undefined){
                         $("#printArea").css("background-image", "url('uploaded_images/"+sc[0]['site_background']+"')");
                     }
                     // church name
@@ -518,6 +558,18 @@
                     if(sc[0]['address_text_style'] != ""){
                         $("#address_text").css('font-family', sc[0]['address_text_style']);
                         $("#address_font_style").val(sc[0]['address_text_style']);
+                    }
+
+                    // telephone number
+                    if(sc[0]['tel_number'] != "" && sc[0]['tel_number'] != undefined){
+                        $("#tel_number_text").html(sc[0]['tel_number']);
+                        $("#telephone_number").val(sc[0]['tel_number']);
+                    }
+
+                    // telephone number style
+                    if(sc[0]['tel_number_text_style'] != ""){
+                        $("#tel_number_text").css('font-family', sc[0]['tel_number_text_style']);
+                        $("#telephone_font_style").val(sc[0]['tel_number_text_style']);
                     }
                 }else{
                     localStorage.setItem('site_config', JSON.stringify(site_config));
@@ -669,12 +721,11 @@
             });
             // end include telephone
 
-            //
+            // Save Button in Certificate Setings
             $("#btn_save_certificate_settings").click(function(){
+                var old_site_config = JSON.parse(localStorage.getItem('site_config'));
                 var file_data = $('#upload_background_image').prop('files')[0];   
                 var file_data_logo = $('#upload_logo').prop('files')[0];  
-
-                console.log("file_data", file_data);
 
                 // Upload Background Image
                 var upload_background_image = new FormData();             
@@ -695,30 +746,33 @@
                 var church_name = $("#church_name").val();
                 var church_name_font_style = $("#church_name_font_style").find(":selected").text();
                 var church_name_font_size = $("#church_name_font_size").val();
-                var site_image = file_data_logo != undefined ? file_data_logo.name : localStorage.getItem('site_config')[0]['site_image'] == "" ? "":localStorage.getItem('site_config')[0]['site_image'];
-                var site_background = file_data != undefined ? file_data.name : localStorage.getItem('site_config')[0]['site_background'] == "" ? "":localStorage.getItem('site_config')[0]['site_background'];
-                var church_name = church_name == undefined ? localStorage.getItem('site_config')[0]['church_name']:church_name;
-                church_name_font_size = church_name_font_size == undefined ? localStorage.getItem('site_config')[0]['church_name_font_size']:church_name_font_size;
-                church_name_font_style = church_name_font_style == "Church Name Font Style" ? localStorage.getItem('site_config')[0]['church_name_font_style']:church_name_font_style;
+                var site_image = file_data_logo != undefined ? file_data_logo.name : old_site_config[0]['site_image'] == "" || old_site_config[0]['site_image'] == undefined ? "":old_site_config[0]['site_image'];
+                var site_background = file_data != undefined ? file_data.name : old_site_config[0]['site_background'] == "" || old_site_config[0]['site_background'] == undefined ? "":old_site_config[0]['site_background'];
+                var church_name = church_name == undefined ? old_site_config[0]['church_name']:church_name;
+                church_name_font_size = church_name_font_size == undefined ? old_site_config[0]['church_name_font_size']:church_name_font_size;
+                church_name_font_style = church_name_font_style == "Church Name Font Style" ? old_site_config[0]['church_name_font_style']:church_name_font_style;
 
                 // address and adress font style
                 var address = $("#church_address").val();
                 var church_address_font_style = $("#address_font_style").find(":selected").text();
-                church_address_font_style = church_address_font_style == "Church Name Font Style" ? localStorage.getItem('site_config')[0]['address_text_style']:church_address_font_style;
+                church_address_font_style = church_address_font_style == "Church Name Font Style" ? old_site_config[0]['address_text_style']:church_address_font_style;
+                
                 // Telephone Number
+                var tel_number = $("#telephone_number").val();
+                var telephone_font_style = $("#telephone_font_style").val();
+
                 var site_config = [{
-                    "site_image": site_image,
-                    "site_background": site_background,
+                    "site_image": site_image == undefined ? old_site_config[0]['site_image']:site_image,
+                    "site_background": site_background == undefined ? old_site_config[0]['site_background']:site_image,
                     "certificate_of": "",
-                    "list_of_sponsors": "",
                     "church_name": church_name,
                     "church_name_font_size": church_name_font_size,
                     "church_name_font_style": church_name_font_style,
                     "address": address,
                     "address_text_style": church_address_font_style,
                     "is_include_address": true,
-                    "tel_number": "",
-                    "tel_number_text_style": "",
+                    "tel_number": tel_number,
+                    "tel_number_text_style": telephone_font_style,
                     "is_include_telephone": true
                 }];
 
@@ -742,6 +796,36 @@
                     }
                 });
             }
+
+            // Save Button in Certificate Content
+            $("#btn-save-certificate-content").click(function(){
+                var childs_full_name =$("#childs_full_name").val();
+                var fathers_name =$("#fathers_name").val();
+                var mothers_name =$("#mothers_name").val();
+                var sponsors =$("#sponsors").val();
+                var priest =$("#priest").val();
+                var date_of_baptism =$("#date_of_baptism").val();
+
+
+                var certificate = [{
+                    "childs_name": childs_full_name,
+                    "fathers_name": fathers_name,
+                    "mothers_name": mothers_name,
+                    "list_of_sponsors": sponsors,
+                    "date_of_baptism": priest,
+                    "parish_priest": date_of_baptism
+                }];
+
+                localStorage.setItem('certificate', JSON.stringify('certificate'));
+
+                site_management();
+                $("#modalCertificateForm").modal("hide");
+            });
+
+            // Refresh Button
+            $("#btnRefresh").click(function(){
+                window.location.reload();
+            });
         });
     </script>
   </body>
